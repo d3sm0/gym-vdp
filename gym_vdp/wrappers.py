@@ -3,7 +3,7 @@ import numpy as np
 
 
 class RandomizeVDP(gym.Wrapper):
-    def __init__(self, env, std=0.05):
+    def __init__(self, env, std=0.03):
         super(RandomizeVDP, self).__init__(env)
         self._std = std
 
@@ -15,13 +15,13 @@ class RandomizeVDP(gym.Wrapper):
         return s, r, d, info
 
     def reset(self, **kwargs):
-        self.env._simulator._mu = 0.
+        self.env._simulator._mu = self.unwrapped.np_random.normal(1.,scale=self._std)
         s = super(RandomizeVDP, self).reset()
         return s
 
 
 class Constrained(gym.Wrapper):
-    def __init__(self, env, action_bound=1, state_bound=None):
+    def __init__(self, env, action_bound=5., state_bound=10.):
         super(Constrained, self).__init__(env)
         if action_bound is not None:
             self.action_space = gym.spaces.Box(

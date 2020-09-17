@@ -70,9 +70,11 @@ def rk4(derivs, t, y0, *args, **kwargs):
 class VanDerPolPendulum:
     _best_x0 = [-0.1144, 2.0578]  # taken from drake, thanks !
 
-    def __init__(self, x0=(0, 1), mu=1):
+    def __init__(self, x0=(0, 1), mu=1, state_bound=10., action_bound=10.):
         self._dt = 0.1
         self.time_step = 0
+        self.state_bound = state_bound
+        self.action_bound = action_bound
 
         self._mu = mu
         self.x = self._x0 = x0
@@ -86,10 +88,10 @@ class VanDerPolPendulum:
         return np.linalg.norm(u) ** 2 + np.linalg.norm(x) ** 2
 
     def step(self, u):
-        u = float(u)
+        u = float(np.clip(u, -self.action_bound, self.action_bound))
         t_span = [0, self._dt]
         out = rk4(vdp, t_span, self.x, u, self._mu)
-        x = out[-1]
+        x = np.clip(out[-1], -self.state_bound, self.state_bound)
         c = self.cost_fn(x, u)
         self.time_step += 1
         self.x = x
