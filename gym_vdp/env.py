@@ -12,7 +12,7 @@ try:
     from gym.envs.classic_control import rendering
 except ImportError as e:
     Warning("Live Rendering not available", e)
-    _metadata['render.modes'].remove("rgb_array")
+    _metadata['render.modes'] = ["static"]
 
 
 class VanDerPolPendulumEnv(gym.Env):

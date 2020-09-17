@@ -86,6 +86,7 @@ class VanDerPolPendulum:
         return np.linalg.norm(u) ** 2 + np.linalg.norm(x) ** 2
 
     def step(self, u):
+        u = float(u)
         t_span = [0, self._dt]
         out = rk4(vdp, t_span, self.x, u, self._mu)
         x = out[-1]
