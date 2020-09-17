@@ -25,14 +25,15 @@ class VanDerPolPendulumEnv(gym.Env):
         self._simulator = VanDerPolPendulum(x0)
         self._xs = []
         self.max_steps = 200
-        self.max_cost = 1e3
+        self.max_cost = 10
         self.total_cost = 0
         self.seed()
 
     def step(self, action: float):
         s, c = self._simulator.step(action)
+        c = np.clip(c, -self.max_cost, self.max_cost)
         self.total_cost += c
-        done = self.max_steps == self._simulator.time_step or self.total_cost > self.max_cost
+        done = self.max_steps == self._simulator.time_step
         self._xs.append((s, action))
         return s, -c, done, {}
 
