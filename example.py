@@ -13,11 +13,10 @@ def main():
     while True:
         a = np.random.uniform(0,1)
         s, r, done, info = env.step(a)
-        print(info)
-        #env.render(mode="human")
+        env.render(mode="human")
         if done:
             break
-    #env.render(mode="static", fname="figures/vdp.png")
+    env.render(mode="static", fname="figures/vdp.png")
     env.close()
 
 

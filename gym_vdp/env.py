@@ -44,7 +44,7 @@ class VanDerPolPendulumEnv(gym.Env):
         if mode == "static":
             fig = self._render_static(kwargs)
             return fig
-        elif mode in self.metadata.keys():
+        elif mode in self.metadata["render.modes"]:
             self._render_rgb()
             return self.viewer.render(return_rgb_array=mode == "rgb_array")
         else:
