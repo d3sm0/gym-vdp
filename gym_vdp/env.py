@@ -37,7 +37,7 @@ class VanDerPolPendulumEnv(gym.Env):
         self._xs = []
         x0 = self.observation_space.sample()
         s = self._simulator.reset(x0)
-        self._xs.append((s, np.zeros(shape=(1,))))
+        self._xs.append((s, 0.))
         return s
 
     def render(self, mode="human", **kwargs):
