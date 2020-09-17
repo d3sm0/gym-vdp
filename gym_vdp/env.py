@@ -1,14 +1,23 @@
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
-from gym.envs.classic_control import rendering
 from gym.utils import seeding
 
 from gym_vdp.simulator import VanDerPolPendulum
 from gym_vdp.wrappers import RandomizeVDP, Constrained
 
+_metadata = {'render.modes': ["static", "human", "rgb_array"]}
+
+try:
+    from gym.envs.classic_control import rendering
+except ImportError as e:
+    Warning("Live Rendering not available", e)
+    _metadata['render.modes'].remove("rgb_array")
+
 
 class VanDerPolPendulumEnv(gym.Env):
+    metadata = _metadata
+
     def __init__(self, x0=None):
         self.viewer = None
         self.action_space = gym.spaces.Box(low=-1, high=1, shape=(1,))
@@ -33,16 +42,15 @@ class VanDerPolPendulumEnv(gym.Env):
 
     def render(self, mode="human", **kwargs):
         if mode == "static":
-            xs, a = list(zip(*self._xs))
-            xs = np.array(xs).T
-            a = np.array(a)
-            fig = _static_render(xs, a)
-            if "fname" in kwargs.keys():
-                plt.savefig(kwargs["fname"])
-            plt.show(block=False)
-            plt.pause(3)
-            plt.close()
+            fig = self._render_static(kwargs)
+            return fig
+        elif mode in self.metadata.keys():
+            self._render_rgb()
+            return self.viewer.render(return_rgb_array=mode == "rgb_array")
+        else:
+            raise Exception(f"Render mode {mode} not found.")
 
+    def _render_rgb(self):
         if self.viewer is None:
             window_size = (600, 600)
             self.viewer = rendering.Viewer(*window_size)
@@ -55,11 +63,21 @@ class VanDerPolPendulumEnv(gym.Env):
             s, _ = self._xs[-2]
             line = _render_last_state(s)
             self.viewer.add_geom(line)
-
         s, _ = self._xs[-1]
         circ = _render_state(s, color=(0, 1, 0))
         self.viewer.add_onetime(circ)
-        return self.viewer.render(return_rgb_array=mode == "rgb_array")
+
+    def _render_static(self, kwargs):
+        xs, a = list(zip(*self._xs))
+        xs = np.array(xs).T
+        a = np.array(a)
+        fig = _static_render(xs, a)
+        if "fname" in kwargs.keys():
+            plt.savefig(kwargs["fname"])
+        plt.show(block=False)
+        plt.pause(3)
+        plt.close()
+        return fig
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
