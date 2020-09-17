@@ -25,16 +25,20 @@ class VanDerPolPendulumEnv(gym.Env):
         self._simulator = VanDerPolPendulum(x0)
         self._xs = []
         self.max_steps = 200
+        self.max_cost = 1e3
+        self.total_cost = 0
         self.seed()
 
     def step(self, action: float):
         s, c = self._simulator.step(action)
-        done = self.max_steps == self._simulator.time_step
+        self.total_cost += c
+        done = self.max_steps == self._simulator.time_step or self.total_cost > self.max_cost
         self._xs.append((s, action))
         return s, -c, done, {}
 
     def reset(self):
         self._xs = []
+        self.total_cost = 0
         x0 = self.observation_space.sample()
         s = self._simulator.reset(x0)
         self._xs.append((s, 0.))
@@ -130,7 +134,7 @@ def _static_render(xs, a):
     return fig
 
 
-def make_vdp(env_id, randomize=False, constrained=False, x0=None, std=0.3):
+def make_vdp(env_id, randomize=False, constrained=False, x0=None, std=0.03):
     env = VanDerPolPendulumEnv(x0=x0)
     if randomize:
         env = RandomizeVDP(env, std=std)
