@@ -130,10 +130,10 @@ def _static_render(xs, a):
     return fig
 
 
-def make_vdp(env_id, randomize=False, constrained=False, x0=None):
+def make_vdp(env_id, randomize=False, constrained=False, x0=None, std=0.3):
     env = VanDerPolPendulumEnv(x0=x0)
     if randomize:
-        env = RandomizeVDP(env)
+        env = RandomizeVDP(env, std=std)
     if constrained:
         env = Constrained(env)
     return env
