@@ -10,7 +10,7 @@ _metadata = {'render.modes': ["static", "human", "rgb_array"]}
 
 try:
     from gym.envs.classic_control import rendering
-except ImportError as e:
+except Exception as e:
     Warning("Live Rendering not available", e)
     _metadata['render.modes'] = ["static"]
 
@@ -48,7 +48,7 @@ class VanDerPolPendulumEnv(gym.Env):
             self._render_rgb()
             return self.viewer.render(return_rgb_array=mode == "rgb_array")
         else:
-            raise Exception(f"Render mode {mode} not found.")
+            return None
 
     def _render_rgb(self):
         if self.viewer is None:
