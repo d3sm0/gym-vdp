@@ -1,17 +1,15 @@
 import numpy as np
 
 from gym_vdp.env import make_vdp
-from gym_vdp.simulator import VanDerPolPendulum
-from gym.wrappers.monitor import Monitor
 
 
-def main():
-    env = make_vdp("vdp-v0", randomize=True, x0=VanDerPolPendulum.best_x0)
-    #env = Monitor(env, directory="logs/", force=True)
+def control():
+    env = make_vdp("vdp-v0", randomize=True, x0=(1, 1))
+    # env = Monitor(env, directory="logs/", force=True)
     env.seed(0)
     env.reset()
     while True:
-        a = 0 #np.random.uniform(-10., 10.)
+        a = np.random.uniform(-2, 2)
         s, r, done, info = env.step(a)
         env.render(mode="human")
         if done:
@@ -20,5 +18,21 @@ def main():
     env.close()
 
 
+def stationarity():
+    env = make_vdp("vdp-lc-v0", randomize=False)
+    # env = Monitor(env, directory="logs/", force=True)
+    env.seed(0)
+    env.reset()
+    while True:
+        a = env.unwrapped._simulator._best_action
+        s, r, done, info = env.step(a)
+        # env.render(mode="human")
+        if done:
+            break
+    env.render(mode="static", fname="figures/vdp.png")
+    env.close()
+
+
 if __name__ == "__main__":
-    main()
+    stationarity()
+    # control()

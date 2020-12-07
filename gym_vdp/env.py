@@ -1,9 +1,10 @@
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
+from gym.envs.registration import register
 from gym.utils import seeding
 
-from gym_vdp.simulator import VanDerPolPendulum
+from gym_vdp.simulator import VanDerPolOscillator, LimitCycleVDP
 from gym_vdp.wrappers import RandomizeVDP, Constrained
 
 _metadata = {'render.modes': ["static", "human", "rgb_array"]}
@@ -15,14 +16,14 @@ except Exception as e:
     _metadata['render.modes'] = ["static"]
 
 
-class VanDerPolPendulumEnv(gym.Env):
+class VanDerPolOscillatorEnv(gym.Env):
     metadata = _metadata
 
     def __init__(self, x0=None):
         self.viewer = None
-        self.action_space = gym.spaces.Box(low=-1, high=1, shape=(1,))
+        self.action_space = gym.spaces.Box(low=-2, high=2, shape=(1,))
         self.observation_space = gym.spaces.Box(low=-3, high=3, shape=(2,))
-        self._simulator = VanDerPolPendulum(x0)
+        self._simulator = VanDerPolOscillator(x0)
         self._xs = []
         self.max_steps = 200
         self.max_cost = 10
@@ -95,6 +96,13 @@ class VanDerPolPendulumEnv(gym.Env):
             self.viewer.close()
 
 
+class LimitCycleVDPEnv(VanDerPolOscillatorEnv):
+    def __init__(self):
+        super(LimitCycleVDPEnv, self).__init__()
+        self._simulator = LimitCycleVDP()
+        self.max_steps = self._simulator.max_steps
+
+
 def _render_state(s, color=(1, 0, 0)):
     attr = rendering.Transform(translation=tuple(s))
     circ = rendering.make_circle(0.1)
@@ -136,9 +144,19 @@ def _static_render(xs, a):
 
 
 def make_vdp(env_id, randomize=False, constrained=False, x0=None, std=0.03):
-    env = VanDerPolPendulumEnv(x0=x0)
+    env = gym.make(env_id)
     if randomize:
         env = RandomizeVDP(env, std=std)
     if constrained:
         env = Constrained(env)
     return env
+
+
+register(
+    id="vdp-v0",
+    entry_point="gym_vdp.env:VanderPolOscillatorEnv"
+)
+register(
+    id="vdp-lc-v0",
+    entry_point="gym_vdp.env:LimitCycleVDPEnv"
+)

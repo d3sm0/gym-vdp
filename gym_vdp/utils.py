@@ -1,11 +1,6 @@
 import numpy as np
 
 
-def _vdp(t, x, u, mu):
-    x, x_dot = x
-    x_ddot = mu * x_dot * (1 - x ** 2) - x + u
-    return x_dot, x_ddot
-
 
 def _rk4(derivs, t, y0, *args, **kwargs):
     """
@@ -67,6 +62,6 @@ def _rk4(derivs, t, y0, *args, **kwargs):
     return yout
 
 
-def rk4(*args, **kwargs):
-    out = _rk4(_vdp, *args, **kwargs)
+def rk4(fn, *args, **kwargs):
+    out = _rk4(fn, *args, **kwargs)
     return out[-1]
