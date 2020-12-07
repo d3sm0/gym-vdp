@@ -26,7 +26,7 @@ class VanDerPolOscillator:
     def reset(self, x0=None):
         self.time_step = 0
         self.x = self._x0 if x0 is None else x0
-        return self.x
+        return np.array(self.x)
 
     def cost_fn(self, x, u):
         return np.linalg.norm(u) ** 2 + np.linalg.norm(x) ** 2
@@ -72,7 +72,7 @@ class LimitCycleVDP(VanDerPolOscillator):
             u - self._best_action) ** 2
 
     def reset(self, x0=None):
-        return self._x0
+        return np.array(self._x0)
 
 
 def _vdp(t, x, u, mu, gamma=0.5):
