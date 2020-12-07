@@ -80,9 +80,7 @@ class VanDerPolOscillatorEnv(gym.Env):
         fig = _static_render(xs, a)
         if "fname" in kwargs.keys():
             plt.savefig(kwargs["fname"])
-        plt.show(block=False)
-        plt.pause(3)
-        plt.close()
+        self.fig =fig
         return fig
 
     def seed(self, seed=None):
@@ -94,9 +92,12 @@ class VanDerPolOscillatorEnv(gym.Env):
     def close(self):
         if self.viewer is not None:
             self.viewer.close()
+        if hasattr(self, "fig"):
+            plt.close(self.fig)
 
 
 class LimitCycleVDPEnv(VanDerPolOscillatorEnv):
+
     def __init__(self):
         super(LimitCycleVDPEnv, self).__init__()
         self._simulator = LimitCycleVDP()
@@ -125,18 +126,24 @@ def _render_last_state(s):
 def _static_render(xs, a):
     fig, ax = plt.subplots(1, 3, figsize=(10, 4))
     ax[0].set(
-        xlabel="t", ylabel="y", title="time_dynamics",
+        xlabel="t",
+        ylabel="y",
+        title="time_dynamics",
     )
     ax[0].plot(xs[0], ls="--")
     ax[0].plot(xs[1], ls="-")
     ax[1].set(
-        xlabel="q", ylabel="q_dot", title="state_dynamics",
+        xlabel="q",
+        ylabel="q_dot",
+        title="state_dynamics",
     )
     ax[1].plot(xs[0], xs[1], ls="--")
     ax[1].plot(xs[0, 0], xs[1, 0], "o", c="r")
     ax[1].plot(xs[0, -1], xs[1, -1], "o", c="y")
     ax[2].set(
-        xlabel="t", ylabel="u", title="controls",
+        xlabel="t",
+        ylabel="u",
+        title="controls",
     )
     ax[2].plot(a)
     plt.tight_layout()
@@ -152,11 +159,5 @@ def make_vdp(env_id, randomize=False, constrained=False, x0=None, std=0.03):
     return env
 
 
-register(
-    id="vdp-v0",
-    entry_point="gym_vdp.env:VanderPolOscillatorEnv"
-)
-register(
-    id="vdp-lc-v0",
-    entry_point="gym_vdp.env:LimitCycleVDPEnv"
-)
+register(id="vdp-v0", entry_point="gym_vdp.env:VanderPolOscillatorEnv")
+register(id="vdp-lc-v0", entry_point="gym_vdp.env:LimitCycleVDPEnv")

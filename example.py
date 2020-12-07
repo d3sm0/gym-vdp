@@ -1,6 +1,8 @@
 import numpy as np
 
 from gym_vdp.env import make_vdp
+import time
+import matplotlib.pyplot as plt
 
 
 def control():
@@ -29,7 +31,9 @@ def stationarity():
         # env.render(mode="human")
         if done:
             break
-    env.render(mode="static", fname="figures/vdp.png")
+    fig = env.render(mode="static", fname="figures/vdp.png")
+    plt.show(block=False)
+    time.sleep(10)
     env.close()
 
 

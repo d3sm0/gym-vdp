@@ -9,8 +9,8 @@ setup(
     packages=["gym_vdp"],
     install_requires=
     [
-        "gym>=0.17.2",
-        "numpy>=1.19.1",
-        "matplotlib>=3.3.0"
+        "gym",
+        "numpy",
+        "matplotlib"
     ]
 )
